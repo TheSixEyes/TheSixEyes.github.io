@@ -151,7 +151,7 @@
     .hero-title {
       font-family: var(--serif);
       font-size: clamp(3.5rem, 10vw, 9rem);
-      line-height: 0.95;
+      line-height: 1.05;
       letter-spacing: -0.03em;
       color: var(--fg);
       margin-bottom: 2rem;
@@ -159,8 +159,9 @@
 
     .hero-title .word {
       display: inline-block;
-      overflow: hidden;
+      overflow: visible;
       vertical-align: bottom;
+      padding-bottom: 0.15em;
     }
 
     .hero-title .word span {
@@ -168,6 +169,7 @@
       opacity: 0;
       transform: translateY(110%);
       animation: word-reveal 1s var(--ease-out-expo) forwards;
+      will-change: transform, opacity;
     }
 
     .hero-subtitle {
@@ -182,6 +184,7 @@
 
     .hero-cta {
       display: flex;
+      justify-content: center;
       gap: 1rem;
       margin-top: 3rem;
       opacity: 0;
@@ -499,14 +502,33 @@
     /* ------------------------------------------------------------------ */
     /* Responsive                                                          */
     /* ------------------------------------------------------------------ */
+    /* Tablet breakpoint */
+    @media (max-width: 900px) {
+      .card-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Mobile breakpoint */
     @media (max-width: 640px) {
       .nav-links { gap: 1rem; }
       .nav-links a { font-size: 0.75rem; }
       .card-grid { grid-template-columns: 1fr; }
-      .hero-cta { flex-direction: column; }
-      .hero-cta .btn { text-align: center; justify-content: center; }
+      .hero-cta { flex-direction: column; align-items: center; }
+      .hero-cta .btn { text-align: center; justify-content: center; width: 100%; max-width: 280px; }
+      .hero-title { text-align: center; }
+      .hero-eyebrow { text-align: center; }
+      .hero-subtitle { text-align: center; margin-left: auto; margin-right: auto; }
+      .hero-scroll { display: none; }
+      .section-heading { font-size: clamp(1.75rem, 6vw, 2.5rem); }
       footer .container { flex-direction: column; text-align: center; }
       .footer-links { justify-content: center; }
+    }
+
+    /* Small mobile */
+    @media (max-width: 380px) {
+      .nav-links { gap: 0.6rem; }
+      .nav-links a { font-size: 0.65rem; letter-spacing: 0.04em; }
+      .hero-title { font-size: clamp(2.8rem, 14vw, 3.5rem); }
+      .btn { padding: 0.75rem 1.5rem; font-size: 0.85rem; }
     }
 
     /* ------------------------------------------------------------------ */
@@ -544,7 +566,7 @@
       <p class="hero-eyebrow">Full-Stack Developer</p>
       <h1 class="hero-title">
         <span class="word"><span>Taylor</span></span><br>
-        <span class="word"><span>Bethke</span></span>
+        <span class="word"><span style="animation-delay: 0.45s">Bethke</span></span>
       </h1>
       <p class="hero-subtitle">
         I design and build polished software for the web, desktop, and mobile.
