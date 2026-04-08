@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taylor Bethke — Developer</title>
+  <meta name="description" content="Full-stack developer building polished software for the web, desktop, and mobile.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ------------------------------------------------------------------ */
+    /* Custom properties and GPU-accelerated @property declarations       */
+    /* ------------------------------------------------------------------ */
+    @property --gradient-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @property --reveal-progress {
+      syntax: "<number>";
+      initial-value: 0;
+      inherits: false;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0c0b0f;
+      --fg: #e8e4dd;
+      --fg-muted: #8a8680;
+      --accent: #c4a882;
+      --accent-hover: #dbbf9c;
+      --surface: #16141a;
+      --border: #2a272e;
+      --serif: "Instrument Serif", Georgia, serif;
+      --sans: "Satoshi", system-ui, sans-serif;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100dvh;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Layout scaffolding                                                  */
+    /* ------------------------------------------------------------------ */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Navigation                                                          */
+    /* ------------------------------------------------------------------ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.5rem 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      color: var(--fg);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.3s var(--ease-out-quart);
+    }
+
+    .nav-links a:hover { color: var(--fg); }
+
+    /* ------------------------------------------------------------------ */
+    /* Hero                                                                */
+    /* ------------------------------------------------------------------ */
+    .hero {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 6rem;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(1rem);
+      animation: fade-up 0.8s var(--ease-out-expo) 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 10vw, 9rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 2rem;
+    }
+
+    .hero-title .word {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+
+    .hero-title .word span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(110%);
+      animation: word-reveal 1s var(--ease-out-expo) forwards;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      line-height: 1.6;
+      color: var(--fg-muted);
+      max-width: 540px;
+      opacity: 0;
+      transform: translateY(1.5rem);
+      animation: fade-up 0.8s var(--ease-out-expo) 0.8s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 3rem;
+      opacity: 0;
+      transform: translateY(1.5rem);
+      animation: fade-up 0.8s var(--ease-out-expo) 1s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 100px;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.4s var(--ease-out-expo);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--fg-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      color: var(--fg);
+      border-color: var(--fg-muted);
+      transform: translateY(-2px);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--fg-muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fade-up 0.8s var(--ease-out-expo) 1.4s forwards;
+    }
+
+    .hero-scroll .line {
+      width: 1px;
+      height: 48px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-scroll .line::after {
+      content: "";
+      position: absolute;
+      top: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      animation: scroll-line 2s var(--ease-out-expo) infinite;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Sections                                                            */
+    /* ------------------------------------------------------------------ */
+    section {
+      padding: clamp(4rem, 10vw, 8rem) 0;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-heading {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-body {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--fg-muted);
+      max-width: 600px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Link cards                                                          */
+    /* ------------------------------------------------------------------ */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      text-decoration: none;
+      color: var(--fg);
+      overflow: hidden;
+      transition: all 0.5s var(--ease-out-expo);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent) 8%, transparent),
+        transparent 60%
+      );
+      transition: opacity 0.5s var(--ease-out-expo);
+    }
+
+    .card:hover {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px color-mix(in srgb, var(--bg) 80%, transparent);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--fg-muted);
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .card-arrow {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      color: var(--fg-muted);
+      transition: all 0.4s var(--ease-out-expo);
+      opacity: 0;
+      transform: translate(-4px, 4px);
+    }
+
+    .card:hover .card-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Tech marquee                                                        */
+    /* ------------------------------------------------------------------ */
+    .tech-strip {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+    }
+
+    .tech-track {
+      display: flex;
+      gap: 2rem;
+      animation: marquee 40s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .tech-item {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      white-space: nowrap;
+      transition: color 0.3s;
+    }
+
+    .tech-item:hover { color: var(--accent); }
+
+    /* ------------------------------------------------------------------ */
+    /* Scroll reveal                                                       */
+    /* ------------------------------------------------------------------ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(2rem);
+      transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger children */
+    .reveal-stagger .card { opacity: 0; transform: translateY(2rem); }
+    .reveal-stagger.visible .card {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+    }
+    .reveal-stagger.visible .card:nth-child(1) { transition-delay: 0s; }
+    .reveal-stagger.visible .card:nth-child(2) { transition-delay: 0.1s; }
+    .reveal-stagger.visible .card:nth-child(3) { transition-delay: 0.2s; }
+    .reveal-stagger.visible .card:nth-child(4) { transition-delay: 0.3s; }
+
+    /* ------------------------------------------------------------------ */
+    /* Footer                                                              */
+    /* ------------------------------------------------------------------ */
+    footer {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ------------------------------------------------------------------ */
+    /* Keyframes                                                           */
+    /* ------------------------------------------------------------------ */
+    @keyframes fade-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes word-reveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scroll-line {
+      0% { top: -100%; }
+      50% { top: 100%; }
+      100% { top: 100%; }
+    }
+
+    @keyframes marquee {
+      to { transform: translateX(-50%); }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Responsive                                                          */
+    /* ------------------------------------------------------------------ */
+    @media (max-width: 640px) {
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.75rem; }
+      .card-grid { grid-template-columns: 1fr; }
+      .hero-cta { flex-direction: column; }
+      .hero-cta .btn { text-align: center; justify-content: center; }
+      footer .container { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Reduced motion                                                      */
+    /* ------------------------------------------------------------------ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .tech-track { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Film grain overlay -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-logo">TB</a>
+      <ul class="nav-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#connect">Connect</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Full-Stack Developer</p>
+      <h1 class="hero-title">
+        <span class="word"><span>Taylor</span></span><br>
+        <span class="word"><span>Bethke</span></span>
+      </h1>
+      <p class="hero-subtitle">
+        I design and build polished software for the web, desktop, and mobile.
+        Currently shipping 100+ applications and studying software development.
+      </p>
+      <div class="hero-cta">
+        <a href="#work" class="btn btn-primary">See my work</a>
+        <a href="https://github.com/TheSixEyes" target="_blank" rel="noopener" class="btn btn-ghost">GitHub</a>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="line"></div>
+    </div>
+  </header>
+
+  <!-- Tech marquee -->
+  <div class="tech-strip" aria-hidden="true">
+    <div class="tech-track">
+      <span class="tech-item">React</span>
+      <span class="tech-item">TypeScript</span>
+      <span class="tech-item">Node.js</span>
+      <span class="tech-item">Rust</span>
+      <span class="tech-item">C#</span>
+      <span class="tech-item">Kotlin</span>
+      <span class="tech-item">Python</span>
+      <span class="tech-item">PHP</span>
+      <span class="tech-item">Three.js</span>
+      <span class="tech-item">GSAP</span>
+      <span class="tech-item">Docker</span>
+      <span class="tech-item">PostgreSQL</span>
+      <span class="tech-item">WordPress</span>
+      <span class="tech-item">Laravel</span>
+      <span class="tech-item">Azure</span>
+      <span class="tech-item">Tauri</span>
+      <span class="tech-item">WPF / .NET</span>
+      <span class="tech-item">Vite</span>
+      <span class="tech-item">Prisma</span>
+      <span class="tech-item">Express</span>
+    </div>
+    <div class="tech-track" aria-hidden="true">
+      <span class="tech-item">React</span>
+      <span class="tech-item">TypeScript</span>
+      <span class="tech-item">Node.js</span>
+      <span class="tech-item">Rust</span>
+      <span class="tech-item">C#</span>
+      <span class="tech-item">Kotlin</span>
+      <span class="tech-item">Python</span>
+      <span class="tech-item">PHP</span>
+      <span class="tech-item">Three.js</span>
+      <span class="tech-item">GSAP</span>
+      <span class="tech-item">Docker</span>
+      <span class="tech-item">PostgreSQL</span>
+      <span class="tech-item">WordPress</span>
+      <span class="tech-item">Laravel</span>
+      <span class="tech-item">Azure</span>
+      <span class="tech-item">Tauri</span>
+      <span class="tech-item">WPF / .NET</span>
+      <span class="tech-item">Vite</span>
+      <span class="tech-item">Prisma</span>
+      <span class="tech-item">Express</span>
+    </div>
+  </div>
+
+  <!-- Work section -->
+  <section id="work">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Selected Work</p>
+        <h2 class="section-heading">Things I've built</h2>
+        <p class="section-body">
+          From community platforms to streaming tools to AI-powered chat clients,
+          I build across the full stack and ship to real users.
+        </p>
+      </div>
+      <div class="card-grid reveal-stagger">
+
+        <a href="https://github.com/TheSixEyes" target="_blank" rel="noopener" class="card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="card-title">Frontend Playground</div>
+          <div class="card-desc">Community-built UI component library. React 18, TypeScript, Vite, Prisma. 479 sandboxed snippets across CSS, JS, and mixed categories.</div>
+          <div class="card-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </a>
+
+        <a href="https://github.com/TheSixEyes" target="_blank" rel="noopener" class="card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="card-title">Stealth</div>
+          <div class="card-desc">AI chat client built with Tauri and Rust. Agentic mode with filesystem, shell, and web tools. Deep Dive research pipeline.</div>
+          <div class="card-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </a>
+
+        <a href="https://github.com/TheSixEyes" target="_blank" rel="noopener" class="card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="card-title">DevWharf</div>
+          <div class="card-desc">WordPress portfolio with Three.js hero animations, scroll-driven reveals, SVG tech badges, and responsive layouts for 1080p through 4K.</div>
+          <div class="card-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </a>
+
+        <a href="https://github.com/TheSixEyes" target="_blank" rel="noopener" class="card">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <div class="card-title">ChimeraCast</div>
+          <div class="card-desc">WPF streaming app with GPU-accelerated D3D11 preview, DXGI/WGC capture, and a heavily refactored, modular codebase.</div>
+          <div class="card-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About section -->
+  <section id="about">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">About</p>
+        <h2 class="section-heading">A bit about me</h2>
+        <p class="section-body">
+          I'm a full-stack developer studying Software Development at Spokane
+          Community College (4.0 GPA). I build and sell commercial applications
+          on Gumroad spanning web, desktop, and mobile platforms. My stack runs
+          deep: React, TypeScript, Rust, C#, Kotlin, PHP, Python, and whatever
+          the problem demands.
+        </p>
+        <p class="section-body" style="margin-top: 1rem;">
+          When I'm not shipping code, I'm probably exploring the latest CSS
+          spec, tinkering with scroll-driven animations, or figuring out how to
+          make something feel just a little more alive on screen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Connect section -->
+  <section id="connect">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Connect</p>
+        <h2 class="section-heading">Let's talk</h2>
+        <p class="section-body">
+          Whether you want to collaborate on a project, have a question about
+          something I've built, or just want to say hey.
+        </p>
+        <div style="margin-top: 2rem;">
+          <a href="mailto:tbethkedev@gmail.com" class="btn btn-primary">tbethkedev@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="footer-copy">&copy; 2026 Taylor Bethke</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/TheSixEyes" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="mailto:tbethkedev@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // ----------------------------------------------------------------
+    // Word-by-word reveal stagger for hero title
+    // ----------------------------------------------------------------
+    document.querySelectorAll('.hero-title .word span').forEach((span, i) => {
+      span.style.animationDelay = `${0.3 + i * 0.15}s`;
+    });
+
+    // ----------------------------------------------------------------
+    // Intersection Observer for scroll-triggered reveals
+    // ----------------------------------------------------------------
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+    );
+
+    document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => {
+      revealObserver.observe(el);
+    });
+  </script>
+</body>
+</html>
